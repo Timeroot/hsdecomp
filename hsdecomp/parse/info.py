@@ -5,7 +5,10 @@ from hsdecomp import ptrutil
 def read_arg_pattern(settings, address):
     num_args = read_num_args(settings, address)
     func_type = read_function_type(settings, address)
-    assert num_args >= len(func_type)
+    #assert num_args >= len(func_type)
+    
+    print(num_args)
+    if(func_type == 'x'): return 'p'*(num_args if num_args < 10 else 5)
     return func_type + 'v' * (num_args - len(func_type))
 
 def read_num_args(settings, address):
@@ -54,7 +57,11 @@ def read_function_type(settings, address):
         return ret
     else:
        # TODO: Read large bitmaps
-       assert False, "unknown function type"
+       #assert False, "unknown function type" + str(type) + " at "+str(hex(address))
+       print("##################")
+       print("##################")
+       print("##################")
+       return 'x'
 
 def read_closure_type(settings, address):
     type_table = {

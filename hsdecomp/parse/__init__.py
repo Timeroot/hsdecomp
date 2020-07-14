@@ -21,7 +21,7 @@ def interp_args(args, arg_pattern):
     return ret
 
 def read_closure(settings, worklist, heaps, pointer):
-    try:
+    #try:
         info_pointer = ptrutil.dereference(settings, pointer, heaps, []).untagged
         assert isinstance(info_pointer, StaticValue)
         info_address = info_pointer.value
@@ -64,7 +64,7 @@ def read_closure(settings, worklist, heaps, pointer):
         worklist.append(FunctionThunkWork(heaps = heaps, address = info_address, main_register = ptrutil.make_tagged(settings, pointer)._replace(tag = len(arg_pattern)), arg_pattern = arg_pattern))
         return Pointer(info_pointer)
 
-    except:
+    #except:
         e_type, e_obj, e_tb = sys.exc_info()
         print("Error when processing closure at", show.show_pretty_pointer(settings, pointer))
         print("    Error:", e_obj)
@@ -95,7 +95,8 @@ def gather_case_arms(settings, heaps, address, min_tag, max_tag, initial_stack, 
     first_instructions = list(disasm.disasm_from_until(settings, address, lambda insn: insn.group(capstone.x86.X86_GRP_JUMP)))
     mach.simulate(first_instructions)
 
-    if first_instructions[-2].mnemonic == 'cmp' and isinstance(mach.load(first_instructions[-2].operands[0]), Tagged) and isinstance(mach.load(first_instructions[-2].operands[0]).untagged, Offset) and isinstance(mach.load(first_instructions[-2].operands[0]).untagged.base, CasePointer) and first_instructions[-2].operands[1].type == capstone.x86.X86_OP_IMM:
+    if first_instructions[-2].mnemonic == 'cmp' and isinstance(mach.load(first_instructions[-2].operands[0]), Tagged) and isinstance(mach.load(first_instructions[-2].operands[0]).untagged, Offset) and isinstance(mach.load(first_instructions[-2].operands[0]).untagged.base, CasePointer) and first_instructions[-2].operands[1].type == capstone.x86.X86_OP_IMM and first_instructions[-1].mnemonic == 'jae':
+        #print("MNEM ",first_instructions[-1].mnemonic )
         assert first_instructions[-1].mnemonic == 'jae'
         small_address = sum(map(lambda insn: insn.size, first_instructions)) + address
         large_address = first_instructions[-1].operands[0].imm
